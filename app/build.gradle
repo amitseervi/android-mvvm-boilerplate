@@ -1,0 +1,146 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    def config = rootProject.ext.configuration
+
+    compileSdkVersion config.compileSdkVersion
+    buildToolsVersion config.buildToolsVersion
+
+    defaultConfig {
+        applicationId config.package
+        minSdkVersion config.minSdkVersion
+        targetSdkVersion config.targetSdkVersion
+        versionCode config.versionCode
+        versionName config.versionName
+        testInstrumentationRunner config.testInstrumentationRunner
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            debuggable false
+            testCoverageEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            debuggable true
+        }
+    }
+
+    flavorDimensions "environment", "loging"
+    productFlavors {
+        def FLAVOUR_APP_NAME_KEY = "flavour_app_name"
+        def LOGGING_ENABLED_KEY = "logEnabled"
+        def flavourConfig = rootProject.ext.flavourConfig
+
+        dev {
+            // Assigns this product flavor to the "version" flavor dimension.
+            // If you are using only one dimension, this property is optional,
+            // and the plugin automatically assigns all the module's flavors to
+            // that dimension.
+            dimension "environment"
+            applicationIdSuffix flavourConfig.dev.appIdSuffix
+            versionNameSuffix flavourConfig.dev.versionNameSuffix
+            resValue("string", FLAVOUR_APP_NAME_KEY, flavourConfig.dev.appName)
+
+        }
+
+        qa {
+            dimension "environment"
+            applicationIdSuffix flavourConfig.qa.appIdSuffix
+            versionNameSuffix flavourConfig.qa.versionNameSuffix
+            resValue("string", FLAVOUR_APP_NAME_KEY, flavourConfig.qa.appName)
+        }
+
+        prod {
+            dimension "environment"
+            applicationIdSuffix flavourConfig.prod.appIdSuffix
+            versionNameSuffix flavourConfig.prod.versionNameSuffix
+            resValue("string", FLAVOUR_APP_NAME_KEY, flavourConfig.prod.appName)
+        }
+
+        logged {
+            dimension "loging"
+            buildConfigField("boolean", LOGGING_ENABLED_KEY, flavourConfig.logged.logEnabled)
+        }
+
+        nolog {
+            dimension "loging"
+            buildConfigField("boolean", LOGGING_ENABLED_KEY, flavourConfig.nolog.logEnabled)
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+}
+
+dependencies {
+    def libs = rootProject.ext.libPackages
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation libs.impl.kotlinJdk
+    implementation libs.impl.anrdoidxCompat
+    implementation libs.impl.kotlinCore
+    implementation libs.impl.constraintLayout
+    implementation libs.impl.lifecycleExt
+    androidTestImplementation libs.impl.junitExt
+    testImplementation libs.impl.junit
+    androidTestImplementation libs.impl.espresso
+    implementation libs.impl.recyclerView
+    implementation libs.impl.navigationFragmentKtx
+    implementation libs.impl.navigationUiKtx
+    implementation libs.impl.navigationDynamicFeatureFragment
+    androidTestImplementation libs.impl.navigationTesting
+    debugImplementation libs.impl.leakCanary
+    implementation libs.impl.stetho
+    //implementation libs.impl.googleAuth
+    //implementation libs.impl.facebookSdk
+
+    kapt libs.annotationProcessor.dagger
+    kapt libs.annotationProcessor.daggerAndroid
+
+    implementation libs.impl.dagger
+    //implementation libs.impl.room
+    //implementation libs.impl.roomktx
+    //implementation libs.impl.roomRxjava
+    //testImplementation libs.impl.roomTest
+    implementation libs.impl.kotlinCoroutineCore
+    implementation libs.impl.kotlinCoroutineAndroid
+    implementation libs.impl.timber
+    //implementation libs.impl.gson
+    implementation libs.impl.rxJava
+    implementation libs.impl.rxAndroid
+    testImplementation libs.impl.mockito
+    //implementation libs.impl.retrofit
+    //implementation libs.impl.retrofitJsonConverter
+    implementation libs.impl.preferenceKtx
+    implementation libs.impl.stethoOkhttp
+    //implementation libs.impl.retrofitRxJava
+
+    implementation libs.impl.camera2
+    implementation libs.impl.cameraLifecycle
+    implementation libs.impl.cameraView
+    implementation libs.impl.cameraExt
+
+    //implementation libs.impl.fresco
+    implementation libs.impl.glide
+
+    kapt libs.annotationProcessor.dagger
+    kapt libs.annotationProcessor.daggerAndroid
+    //kapt libs.annotationProcessor.room
+}
